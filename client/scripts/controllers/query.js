@@ -1,8 +1,8 @@
 app.controller('queryController', ['$scope','$window', '$http', '$location', '$filter', '$sce', '$interval',  function ($scope, $window, $http, $location, $filter, $sce, $interval ) {
 
     $scope.languages = [ { name: "de", id: 1 }, { name: "bg", id: 2 }, { name: "hu", id: 3 }, { name: "nl", id: 4 }, { name: "el", id: 5 }, { name: "ka", id: 6 }, { name: "da", id: 7 }, { name: "it", id: 8 }, { name: "es", id: 9 }, { name: "ja", id: 10 }, { name: "fr", id: 11 }, { name: "fi", id: 12 }, { name: "ur", id: 13 }, { name: "tr", id: 14 }, { name: "pt", id: 15 }, { name: "ro", id: 16 }, { name: "ru", id: 17 },  { name: "en", id: 18 }  ];
-    $scope.selectedLangIn = $scope.languages[15];
-    $scope.selectedLangOut = $scope.languages[18];
+    $scope.selectedLangIn = $scope.languages[14];
+    $scope.selectedLangOut = $scope.languages[17];
     var sounds = [];
     $scope.sounds = sounds;
 
