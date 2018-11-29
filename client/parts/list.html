@@ -43,7 +43,7 @@
               <div id="results" class="body">
               <div>
 
-<h1 >{{query}}</h1>
+
               <div ng-repeat="item in results | array | orderBy:'duration'" class="result" id="{{'#' + item.id}}"  analytics-on analytics-event="Click" analytics-category="Sounds" analytics-label="item" >
 
                     <img class="smallimg {{item.duration < 1 ? 'true' : 'false'}}" ng-src="{{item.images['spectral_m']}}" ng-click="queuesound({{item.id}}); logger({{item.id}})"/><br/>
