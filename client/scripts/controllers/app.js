@@ -67,10 +67,9 @@ app.config(function ($routeProvider, $locationProvider, $httpProvider) {
             controller: 'queryController'
         }).when('/space', {
             templateUrl: 'parts/space.html',
-
             controller: 'queryController'
         }).otherwise({
-        templateUrl: 'parts/list.html',
+            templateUrl: 'parts/list.html',
             controller: 'queryController'
     });
 

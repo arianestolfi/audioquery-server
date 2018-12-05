@@ -1,0 +1,90 @@
+<section id="playlist" >
+  <div id="audiomenu">
+    <input type="range" min="0" value="0.5" max="1" step="any" id="mastervol" ng-model="mastervol" ng-change="changevol(mastervol)"></input><span class="infos smalltext"> master vol: {{mastervol | number: 2}} </span>
+
+  </div>
+
+  <div id="audios" class="body">
+
+
+           <div ng-repeat="sound in sounds track by sound.playerid" class="players">
+               <ass-player audiodata="sound"></ass-player>
+               <!--<button ng-click="sound.splice($index,1)">X</button>  -->
+            </div>
+
+
+  <div id="recList">
+    <h5 ng-show="recordings">Recordings</h5>
+    <ul id="recordingslist"></ul>
+  </div>
+  </div>
+
+
+</section>
+
+
+<section id="list" class="thin">
+  
+<div class="menu" ng-hide="visible">
+                    <input id="mainsearch" type="text" class="busca control" ng-model="query" placeholder="search"/>
+
+                    <select ng-options="o.name for o in languages" ng-model="selectedLangIn"></select>
+                    <select ng-options="o.name for o in languages" ng-model="selectedLangOut"></select>
+                    <span id="translations" ng-click="searchTranslatedKeyword()"></span>
+
+                    <!--<button class="zoom-out fa fa-minus"></button>-->
+                    <a href="http://playsound.space" target="_blank" style="float:letf;inline"><button class="zoom-in fa fa-plus"></button></a>
+                    <button ng-hide="response.previous == null" class="next-pag resetpar resetimpar fa fa-arrow-left" ng-click="makequery(previous)"></button>
+                    <button ng-hide="response.next == null" class="next-pag resetpar resetimpar fa fa-arrow-right" ng-click="makequery(next)"></button>
+                    <button ng-hide="recording" class="next-pag fa fa-circle" ng-click="startRecording(); recording = true" style="color:#f00"></button>
+                    <button ng-hide="!recording" class="next-pag fa fa-stop" ng-click="stopRecording(); recording = false; recordings = true"></button>
+                </div><br>
+              <a ng-hide=""> </a>
+              <div id="results" class="body">
+              <div>
+
+
+              <div ng-repeat="item in results | array | orderBy:'duration'" class="result" id="{{'#' + item.id}}"  analytics-on analytics-event="Click" analytics-category="Sounds" analytics-label="item" >
+
+                    <img class="smallimg {{item.duration < 1 ? 'true' : 'false'}}" ng-src="{{item.images['spectral_m']}}" ng-click="queuesound({{item.id}}); logger({{item.id}})"/><br/>
+                    <span class="info" >{{item.duration | sectime | date:'mm:ss'}} | {{item.name}}</span>
+                    <a class="fa fa-play queue" ng-click="player({{item.id}})"></a>
+
+
+
+
+
+              </div>
+
+
+
+</div>
+
+              <div class="clear"></div>
+
+
+
+<div id="sources">
+  <p>This application uses several sounds from freesound.org</p>
+  <p>The sounds below are licensed with "Attribution" Creative Commons license and should be credited:</p>
+
+</div>
+
+
+
+
+  </div>
+
+
+<div id="about">
+   <div class="vertical apoio" >about</div>
+   <div class="credits">
+   <p >experimental client for the <a href="http://freesound.org/docs/api/" target="_blank">freesound API</a> <!--<br/> by <a href="http://ariane.stolfi.org" target="_blank">Ariane Stolfi,</a> 2017--></p>
+  <p >To use it, just type the desired search <br/> on the search field. To save your collection <br/>of sounds, just bookmark the url.</p>
+</div>
+    </div>
+
+
+
+
+</section>
