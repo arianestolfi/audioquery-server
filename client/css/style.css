@@ -213,16 +213,39 @@ right: 0;
     width: calc(100% - 250px);
 }
 
+#list.thin {
+  width: 250px;
+}
+
 #ch #list {
    width: calc(100% - 450px);
 
 }
 
-#playlist {
+#playlist.thin{
     width: 220px;
     background-color: #fff;
     position: relative;
     
+}
+
+#playlist.broad {
+    width: calc(100% - 250px);
+    background-color: #fff;
+    position: relative;
+    
+    
+}
+
+#playlist.broad #audios {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#playlist.broad .players {
+  align-self: stretch;
+  margin-right: 5px;
 }
 
 
