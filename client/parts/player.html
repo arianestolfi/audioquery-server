@@ -1,10 +1,11 @@
-<section id="playlist" class="thin">
+<section id="playlist" class="broad">
   <div id="audiomenu">
     <input type="range" min="0" value="0.5" max="1" step="any" id="mastervol" ng-model="mastervol" ng-change="changevol(mastervol)"></input><span class="infos smalltext"> master vol: {{mastervol | number: 2}} </span> 
 
   </div>
 
   <div id="audios" class="body">
+
 
            <div ng-repeat="sound in sounds track by sound.playerid" class="players">
                <ass-player audiodata="sound"></ass-player>
@@ -22,7 +23,7 @@
 </section>
 
 
-<section id="list">
+<section id="list" class="thin" >
   
 <div class="menu" ng-hide="visible">
                     <input id="mainsearch" type="text" class="busca control" ng-model="query" placeholder="search"/>
@@ -39,6 +40,8 @@
                     <button ng-hide="!recording" class="next-pag fa fa-stop" ng-click="stopRecording(); recording = false; recordings = true"></button>
                 </div><br>
               <a ng-hide=""> </a>
+              
+
               <div id="results" class="body">
               <div>
 
@@ -67,6 +70,10 @@
   <p>The sounds below are licensed with "Attribution" Creative Commons license and should be credited:</p>
 
 </div>
+
+
+
+
   </div>
 
 
