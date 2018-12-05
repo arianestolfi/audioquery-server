@@ -1,14 +1,21 @@
-<section id="playlist" class="thin">
+<section class="thin" id="playlist">
   <div id="audiomenu">
     <input type="range" min="0" value="0.5" max="1" step="any" id="mastervol" ng-model="mastervol" ng-change="changevol(mastervol)"></input><span class="infos smalltext"> master vol: {{mastervol | number: 2}} </span>
 
   </div>
 
+
+
   <div id="audios" class="body">
 
 
            <div ng-repeat="sound in sounds track by sound.playerid" class="players">
+               <!-- <ass-player audiodata="sound"></ass-player> -->
                <ass-player audiodata="sound"></ass-player>
+               <!-- <old-ass audiodata="sound"></old-ass> -->
+               <old-player audiodata="sound"></old-player>
+               <!-- use this to test speed of html vs webaudio
+               also pass link to canvas -->
                <!--<button ng-click="sound.splice($index,1)">X</button>  -->
             </div>
 
@@ -23,15 +30,10 @@
 </section>
 
 
-<section id="list">
-  
+<section id="list" >
+
 <div class="menu" ng-hide="visible">
                     <input id="mainsearch" type="text" class="busca control" ng-model="query" placeholder="search"/>
-
-                    <select ng-options="o.name for o in languages" ng-model="selectedLangIn"></select>
-                    <select ng-options="o.name for o in languages" ng-model="selectedLangOut"></select>
-                    <span id="translations" ng-click="searchTranslatedKeyword()"></span>
-
                     <!--<button class="zoom-out fa fa-minus"></button>-->
                     <a href="http://playsound.space" target="_blank" style="float:letf;inline"><button class="zoom-in fa fa-plus"></button></a>
                     <button ng-hide="response.previous == null" class="next-pag resetpar resetimpar fa fa-arrow-left" ng-click="makequery(previous)"></button>
@@ -40,19 +42,35 @@
                     <button ng-hide="!recording" class="next-pag fa fa-stop" ng-click="stopRecording(); recording = false; recordings = true"></button>
                 </div><br>
               <a ng-hide=""> </a>
+<!-- canvas here -->
+              <canvas drag-me id="canvas" width="220" height="220" style="border: 1px solid #d3d3d3;">
+                <draw-circle x="50" y="50" ></draw-circle>
+                <draw-circle x="20" y="50"></draw-circle>
+              </canvas>
+
               <div id="results" class="body">
               <div>
 
 
               <div ng-repeat="item in results | array | orderBy:'duration'" class="result" id="{{'#' + item.id}}"  analytics-on analytics-event="Click" analytics-category="Sounds" analytics-label="item" >
 
+
                     <img class="smallimg {{item.duration < 1 ? 'true' : 'false'}}" ng-src="{{item.images['spectral_m']}}" ng-click="queuesound({{item.id}}); logger({{item.id}})"/><br/>
+
                     <span class="info" >{{item.duration | sectime | date:'mm:ss'}} | {{item.name}}</span>
                     <a class="fa fa-play queue" ng-click="player({{item.id}})"></a>
+                    <div class="reshover">
+                    <a class="fa fa-question descr" ></a>
+
+                    <!-- <div class="description">
+                      {{item.decription}} -->
+                      <span class="descriptiontext">{{item.description}}</span>
+
+                    <!-- </div> -->
 
 
-
-
+                    <!-- <span class="description" >{{item.description}}</span> -->
+                    </div>
 
               </div>
 

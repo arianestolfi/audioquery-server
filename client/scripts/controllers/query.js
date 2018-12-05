@@ -48,7 +48,7 @@ $scope.about= 'estreito';
 	}
 
     	// console.log("making query");
-	$scope.makequery('/freesound/search/text/?query=' + $scope.query + '&fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=40');
+	$scope.makequery('/freesound/search/text/?query=' + $scope.query + '&fields=id,name,previews,tags,images,description,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=40');
 	//$scope.gifquery('http://api.giphy.com/v1/gifs/search?q='+ $scope.query +'&api_key=E6C8oBZ2WghTaR2HujVpSZJML1fvTpm3&limit=5');
 
     });
@@ -70,7 +70,7 @@ $scope.singlequery = function(soundid) {
 
   var req = {
     method: 'GET',
-    url: '/freesound/sounds/'+ soundid + '/?fields=id,name,previews,images,duration,license',
+    url: '/freesound/sounds/'+ soundid + '/?fields=id,name,previews,images,description,duration,license',
     headers: {
       'Content-Type': 'application/json'
     }
@@ -445,7 +445,7 @@ $scope.play = function(itemsrc, itemid) {
   sound.src      = itemsrc;
   sound.type     = 'audio/mpeg';
   //put element on playlist
-  $('#audios').prepend(sound);
+  $('#audios').prepend();
   //if (loaded) {} else {
   sound.play();
   //}

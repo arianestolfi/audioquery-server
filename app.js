@@ -13,6 +13,7 @@ var freesoundApiRouter = require('./routes/freesound');
 var semantic = require('./routes/semantic');
 var users = require('./routes/users');
 var rooms = require('./routes/room');
+var space = require('./routes/space');
 
 var app = express();
 var server = require('http').Server(app);
@@ -45,11 +46,13 @@ app.use('/semantic', semantic);
 app.use('/users', users);
 // app.use('/chat/room', rooms);
 app.use('/chat', rooms);
+app.use('/space', space);
 app.use('/', index);
 
 
 app.get('/fs', () => console.log('fs'));
 app.get('/chat', () => console.log('chat'));
+app.get('/space', () => console.log('space'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

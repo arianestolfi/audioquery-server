@@ -8,8 +8,8 @@ b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
     margin: 0;
@@ -19,7 +19,7 @@ time, mark, audio, video {
     vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
+article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
     display: block;
 }
@@ -83,7 +83,7 @@ section {
     /
 }
 
-.draggable { 
+.draggable {
     height: 100%;
     width: 10px;
     top:0px !important;
@@ -123,7 +123,7 @@ right: 0;
     border-top: 1px solid red;
     border-bottom: 1px solid red;
     height: 15px;
-    width: 100%; 
+    width: 100%;
     position: relative;
 }
 
@@ -140,7 +140,7 @@ right: 0;
     position: relative;
     height: 50px;
     z-index: 0;
-    width: 100%; 
+    width: 100%;
 }
 
 .imgwindow {
@@ -226,15 +226,15 @@ right: 0;
     width: 220px;
     background-color: #fff;
     position: relative;
-    
+
 }
 
 #playlist.broad {
     width: calc(100% - 250px);
     background-color: #fff;
     position: relative;
-    
-    
+
+
 }
 
 #playlist.broad #audios {
@@ -377,11 +377,11 @@ right: 0;
 .buttons {
 margin-bottom: 5px;
  position: fixed;
- padding-left: 5px; 
+ padding-left: 5px;
  z-index: 10;
  background-color: #fff;
- width: 195px; 
- outline: 1px solid black; 
+ width: 195px;
+ outline: 1px solid black;
 }
 
 
@@ -414,7 +414,7 @@ width: 24px;
     position: relative;
     top: 2px;
     font-size: 15px;
-    
+
 }
 
 .buttons button:hover {
@@ -427,7 +427,7 @@ width: 24px;
 button span.glyphicon {
     position: relative;
     top: 0px;
-    
+
 }
 
 
@@ -447,7 +447,7 @@ input[type=range].seekrange {
   z-index: 30;
 }
 
-@-moz-document url-prefix() { 
+@-moz-document url-prefix() {
   input[type=range].seekrange {
   height: 50px;
   margin-top: 0;
@@ -724,7 +724,7 @@ transition: all .3s ease;
 
 
 
-@-moz-document url-prefix() { 
+@-moz-document url-prefix() {
   .player .infotxt {
     position: relative;
     top: -10px;
@@ -784,7 +784,7 @@ z-index: 1;
 
 .speedctr {
     position: relative;
-    width: 100%;  
+    width: 100%;
     z-index: 10;
 }
 
@@ -792,7 +792,7 @@ z-index: 1;
   display: none;
 }
 
-@-moz-document url-prefix() { 
+@-moz-document url-prefix() {
   .firefox {
     display: block;
 }
@@ -1048,7 +1048,7 @@ input[type=range]:focus::-ms-fill-upper {
 #recList a {
     font-size: 10px;
     color: #000;
-    
+
 }
 
 
@@ -1209,7 +1209,3 @@ width: 100%;
   right: 0;
   width: 100%;
 }
-
-
-
-

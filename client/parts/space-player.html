@@ -1,0 +1,78 @@
+<div class="player" id="sound{{''+audiodata.playerid}}" ng-switch on="audiodata.newsound">
+
+<span class="smalltext audiodata">{{timenow}}{{seekpos | sectime | date:'mm:ss'}} | {{freesound.duration | sectime | date:'mm:ss'}} | {{freesound.name}} </span>
+
+
+	<input type="range" min="0" value="{{seekpos}}" max="{{freesound.duration}}" step="any" id="slider-{{audiodata.playerid}}" ng-model="seekpos" ng-change="setseek(seekpos)" class="seekrange"></input>
+
+
+	<div id="img{{containerid}}" class="imgcontainer" >
+	
+		<img class="smallimg" id="img{{freesound.id}}" ng-src="{{freesound.images['spectral_m']}}" style="opacity:{{soundvolume * 7 / 10 + 0.3}};z-index:1" ondragstart="return false;" draggable="false"/>
+	</div>
+
+
+	<div id="{{containerid}}" class="dragcontainer" >
+
+		<div drag-me id="{{loopstart}}" ng-mouseup="setloopstart()" class="draggable ui-widget-content smalltext loopstart"> 
+
+			<div class="pointer" > </div>
+		</div>
+
+
+		<div drag-me id="{{loopend}}" ng-mouseup="setloopend()" class="draggable ui-widget-content smalltext loopend">
+			<div class="pointer"></div>	
+		</div>
+
+	</div>
+
+<!--<input class="loopbtn" type="checkbox" ng-model="loop">-->
+<a class="removebtn fa fa-times" ng-class="" ng-click="removethis()"></a>
+<a class="playbtn fa fa-play" ng-click="playpause()" ng-hide="playing" ng-class="" ></a>
+<a class="playbtn fa fa-pause" ng-click="playpause()" ng-hide="!playing" ng-class="" ></a>
+<a class="playbtn fa fa-stop" ng-class="" ng-click="stop()"></a>
+
+
+<a class="loopbtn fa fa-rotate-right" ng-class="{'disabled': loop}" ng-click="loop = !loop" ></a>
+
+<a class="slidersbtn fa fa-bars">
+
+<div class="sliders">
+
+
+<p class="smalltext panner">
+	<input type="range" min="-1" value="{{soundpan}}" max="1" step="any" id="pan-{{audiodata.playerid}}" ng-model="soundpan" ng-change="setpan(soundpan)"></input> <span class="infotxt">pan: {{soundpan | number: 2}} </span> </p>
+
+
+
+<p class="smalltext speedctr chrome">
+	<input type="range" min="0.1" value="1" max="4" step="any" id="speed-{{audiodata.playerid}}" ng-model="soundspeed" ng-change="setspeed(soundspeed)"></input><span class="infotxt"> Xtime: {{soundspeed | number: 2}} </span>  </p>
+
+<p class="smalltext speedctr firefox">
+	<input type="range" min="0.25" value="1" max="2" step="any" id="speed-{{audiodata.playerid}}" ng-model="soundspeed" ng-change="setspeed(soundspeed)"></input><span class="infotxt"> Xtime: {{soundspeed | number: 2}} </span>  </p>	
+
+</div>
+
+</a>
+
+<span class="smalltext volctr">
+	<input type="range" min="0" value="{{sound.volume}}" max="1" step="any" id="vol-{{audiodata.playerid}}" ng-model="soundvolume" ng-change="setvolume(soundvolume)"></input> <span class="infotxt">vol: {{soundvolume | number: 2}} </span> </span>
+
+<!-- <a class="loopbtn fa fa-rotate-right" ng-class="{'disabled': loop.booleanValue}" ng-click="loop.booleanValue = !loop.booleanValue"></a>&nbsp;&nbsp;&nbsp;&nbsp; -->
+
+<a class="fa fa-download download" href="{{freesound.url}}" target="_new" alt="open on freesound"></a>
+
+
+
+
+
+
+
+
+	
+
+
+
+	<div class="audioplayer" id="audio{{audiodata.playerid}}"></div>
+
+</div>
