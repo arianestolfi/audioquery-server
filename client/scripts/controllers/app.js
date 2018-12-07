@@ -68,6 +68,9 @@ app.config(function ($routeProvider, $locationProvider, $httpProvider) {
         }).when('/space', {
             templateUrl: 'parts/space.html',
             controller: 'queryController'
+          }).when('/space/:sounds', {
+              templateUrl: 'parts/space.html',
+              controller: 'queryController'
         }).otherwise({
             templateUrl: 'parts/list.html',
             controller: 'queryController'
@@ -309,6 +312,7 @@ app.directive ('oldPlayer', ['$rootScope', function($rootScope){
 
           $scope.isPlaying = false;
 
+          $scope.audioStart = 0;
 
           // put element on playlist
           document.getElementById(divid).appendChild(sound);
@@ -316,7 +320,10 @@ app.directive ('oldPlayer', ['$rootScope', function($rootScope){
           if (audiodata.newsound === 1) {
             sound.autoplay = 'autoplay';
             $scope.isPlaying = true;
-            $scope.buffersound;
+            // var milliseconds = (new Date).getTime();
+
+            var audioStart = (new Date).getTime();
+            console.log("playMedia" + "sound id = " + $scope.freesound.id + "; sound duration = " + $scope.freesound.duration + " epoch = " + audioStart );
           }
           counter=0;
 
@@ -527,8 +534,6 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
           $scope.$apply(function () {
             $scope.freesound = response;
             $scope.soundsrc = $scope.freesound.previews['preview-hq-mp3'];
-            // var sound = ngAudio.load($scope.freesound.previews['preview-hq-mp3']);
-
           });
 
           var itemid = $scope.freesound.id;
@@ -553,7 +558,12 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
           $scope.windowid = 'imgwindow' + audiodata.playerid;
           $scope.containerid = 'windowcont' + audiodata.playerid;
 
+          var startTime = (new Date).getTime();
+          console.log("playStart" + "sound id = " + $scope.freesound.id + "; sound duration = " + $scope.freesound.duration + " epoch = " + startTime );
+        
+
           var sound      = document.createElement('audio');
+
 
           //drag boxes ids
           $scope.loopstart = 'start' + audiodata.playerid;
@@ -612,12 +622,11 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
 
             $scope.play =  function() {
 
+              var bufferFiring = (new Date).getTime();
+
+              console.log("playBuffer" + "sound id = " + $scope.freesound.id + "; sound duration = " + $scope.freesound.duration + " epoch = " + bufferFiring);
+
               $scope.sourceNode = audioCtx.createBufferSource();
-
-              // $scope.volume = audioCtx.createGain();
-              // $scope.sourceNode.connect($scope.volume);
-
-              // $scope.volume.connect(gainNode);
 
               $scope.panNode = audioCtx.createStereoPanner();
               $scope.sourceNode.connect($scope.panNode);
@@ -638,7 +647,6 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
               $scope.startedAt = audioCtx.currentTime - $scope.offset;
               $scope.timetoend = $scope.newloopend - $scope.offset;
 
-              //check if this works with the loop
               $scope.sourceNode.start(0, $scope.offset, $scope.timetoend);
               $scope.cursor();
               //console.log("playing");
@@ -713,25 +721,12 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
 
 
                       if($scope.offset) {
-                          //console.log($scope.offset + "is offset");
-                          //return $scope.elapsed;
-                          //console.log("offset");
-                      //console.log(audioCtx.currentTime - $scope.startedAt + "offset");
-                          return audioCtx.currentTime - $scope.startedAt;
+                      return audioCtx.currentTime - $scope.startedAt;
                           //return $scope.seekpos;
 
                       }
                       else if($scope.startedAt) {
-
-                        //when we play
-                        //console.log($scope.startedAt + "startedAt");
-                        //console.log(audioCtx.currentTime - $scope.startedAt + "return");
-                          // var elaps = audioCtx.currentTime - $scope.startedAt;
-                          // if (elaps >= $scope.loopend){
-                          //   return $scope.loopstart;
-                          // }
-
-                          return audioCtx.currentTime - $scope.startedAt;
+                  return audioCtx.currentTime - $scope.startedAt;
                           //console.log("started");
 
                           //return audioCtx.currentTime - $scope.startedAt - $scope.newloopstart;
@@ -765,12 +760,7 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
                     console.log("sample start: " +  $scope.newloopstart);
 
                     $scope.loopupdate();
-                    // if ($scope.sourceNode){
-                    //   $scope.sourceNode.loopStart = $scope.newloopstart;
-
-                    // }
-
-                  }
+            }
 
                     $scope.setloopend = function(){
 
@@ -786,13 +776,6 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
 
                     console.log("sample end: " +  $scope.newloopend);
 
-                    // var timetostop = $scope.newloopend - $scope.seekpos;
-                    // $scope.loopupdate(timetostop);
-                    // if ($scope.sourceNode){
-                    //   $scope.sourceNode.loopEnd = $scope.newloopend;
-
-                    // }
-
 
                   }
 
@@ -802,26 +785,12 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
                   //updates the value of the player with the new value
                   $scope.setseek = function(val){
 
-                    // $scope.offset=val;
-                    // console.log($scope.offset);
-
 
                     if ($scope.getPlaying()){
 
-
-
-                      //$scope.volume.gain.exponentialRampToValueAtTime(0.1, audioCtx.currentTime + 0.05);
-
-
-                      $scope.pause();
+                  $scope.pause();
 
                     $scope.offset=val;
-
-                    // var previousvolume = $scope.volume.gain.value;
-                    // console.log(previousvolume);
-
-                   // $scope.volume.gain.exponentialRampToValueAtTime($scope.soundvolume, audioCtx.currentTime + 0.05);
-
 
 
                     $scope.play();
@@ -835,34 +804,6 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
                   }
 
                   seekslider = document.getElementById("slider-" + audiodata.playerid);
-                  //console.log(seekslider);
-                  //seekslider.addEventListener("onclick", function(){ seektimeupdate(); });
-
-                  // function seektimeupdate(){
-
-                  // //seekslider = document.getElementById("slider-" + audiodata.playerid);
-
-                  // //console.log(seekslider.value);
-                  // // var nt = sound.currentTime;
-                  // // seekslider.value = nt;
-                  // console.log("timeupdate");
-                  // var nt = $scope.getCurrentTime();
-                  // console.log(nt);
-                  // //seekslider.value = nt;
-                  // //console.log(nt);
-                  // var curmins = Math.floor(nt / 60);
-                  // var cursecs = Math.floor(nt - curmins * 60);
-                  // var durmins = Math.floor(getDuration() / 60);
-                  // var dursecs = Math.floor(getDuration() - durmins * 60);
-                  // if(cursecs < 10){ cursecs = "0"+cursecs; }
-                  // if(dursecs < 10){ dursecs = "0"+dursecs; }
-                  // if(curmins < 10){ curmins = "0"+curmins; }
-                  // if(durmins < 10){ durmins = "0"+durmins; }
-
-                  // }
-                  /////////////////////
-
-
 
 
                   $scope.getDuration = function() {
@@ -936,7 +877,7 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
 
 
                   if (audiodata.newsound === 1) {
-                    //sound.autoplay = 'autoplay';
+                  //sound.autoplay = 'autoplay';
                     //play the sound invoking the playsound function
                     //$scope.isPlaying = true;
                     $scope.playing = false;
