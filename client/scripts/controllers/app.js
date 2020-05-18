@@ -247,8 +247,8 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
 
                   $scope.$apply(function () {
                     if ($scope.newloopstart<$scope.newloopend){
-                  $scope.pause();
-                  $scope.loopupdate();
+                  //$scope.pause();
+                  //$scope.loopupdate();
                   $scope.offset = $scope.newloopstart;
                   $scope.seekpos = $scope.offset;
                   $scope.play();
@@ -259,7 +259,10 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
                   });
                 }
 
-                console.log("ended");
+                console.log('ended');
+                //console.log($scope.newloopstart);
+                //console.log($scope.newloopend);
+                
               }              
           };
 
@@ -607,6 +610,7 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
 
           $scope.removethis = function() {
           //$scope.$parent.sounds.splice(index, 1);
+          $scope.pause();
           $scope.$parent.removeitem(audiodata.playerid);
           $scope.$parent.logger2('removed: ' + $scope.freesound.name);
           $scope.stop();
