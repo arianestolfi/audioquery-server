@@ -2,7 +2,7 @@
 
 <span class="smalltext audiodata">{{timenow}}{{seekpos | sectime | date:'mm:ss'}} | {{freesound.duration | sectime | date:'mm:ss'}} | {{freesound.name}} </span>
 
-
+<!--retink-->
 	<input type="range" min="0" value="{{seekpos}}" max="{{freesound.duration}}" step="any" id="slider-{{audiodata.playerid}}" ng-model="seekpos" ng-change="setseek(seekpos)" class="seekrange"></input>
 
 

@@ -13,4 +13,6 @@ to do
 -- syncronize player
 -- multiroom chat
 -- sound retrieval on chat
+-- add silence after loop
+-- fade out controller menu
 
