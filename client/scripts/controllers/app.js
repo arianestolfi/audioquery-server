@@ -611,6 +611,8 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
           $scope.removethis = function() {
           //$scope.$parent.sounds.splice(index, 1);
           //$scope.pause();
+          //line inserted to corret problem of removing during loop
+          $scope.loop = false;
           $scope.stop();
           $scope.$parent.removeitem(audiodata.playerid);
           $scope.$parent.logger2('removed: ' + $scope.freesound.name);
