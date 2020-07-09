@@ -1,32 +1,10 @@
-<section id="playlist" class="broad">
-  <div id="audiomenu">
-    <input type="range" min="0" value="0.5" max="1" step="any" id="mastervol" ng-model="mastervol" ng-change="changevol(mastervol)"></input><span class="infos smalltext"> master vol: {{mastervol | number: 2}} </span> 
 
-  </div>
+<header id="playerheader">
+ <div id="playermenu" id="playermenu" class="menu">
 
-  <div id="audios" class="body">
-
-
-           <div ng-repeat="sound in sounds track by sound.playerid" class="players">
-               <ass-player audiodata="sound"></ass-player>
-               <!--<button ng-click="sound.splice($index,1)">X</button>  -->
-            </div>
-
-
-  <div id="recList">
-    <h5 ng-show="recordings">Recordings</h5>
-    <ul id="recordingslist"></ul>
-  </div>
-  </div>
-
-
-</section>
-
-
-<section id="list" class="thin" >
   
-<div class="menu" ng-hide="visible">
-                    <input id="mainsearch" type="text" class="busca control" ng-model="query" placeholder="search"/>
+
+                   <input id="mainsearch" type="text" class="busca control" ng-model="query" placeholder="search"/>
 
                     <select ng-options="o.name for o in languages" ng-model="selectedLangIn"></select>
                     <select ng-options="o.name for o in languages" ng-model="selectedLangOut"></select>
@@ -38,11 +16,28 @@
                     <button ng-hide="response.next == null" class="next-pag resetpar resetimpar fa fa-arrow-right" ng-click="makequery(next)"></button>
                     <button ng-hide="recording" class="next-pag fa fa-circle" ng-click="startRecording(); recording = true" style="color:#f00"></button>
                     <button ng-hide="!recording" class="next-pag fa fa-stop" ng-click="stopRecording(); recording = false; recordings = true"></button>
-                </div><br>
+                        <span class="mastervol">
+    <input type="range" min="0" value="0.5" max="1" step="any" id="mastervol" ng-model="mastervol" ng-change="changevol(mastervol)"></input>
+    <span class="infos smalltext"> master vol: {{mastervol | number: 2}} </span> 
+    </span>
+
+ </div>
+
+</header>
+
+
+
+
+
+
+
+<section id="list" class="thin" >
+  
+<br>
               <a ng-hide=""> </a>
               
 
-              <div id="results" class="body">
+              <div id="results" class="playerbody">
               <div>
 
 
@@ -63,13 +58,11 @@
 
               <div class="clear"></div>
 
+
+
             
 
-<div id="sources">
-  <p>This application uses several sounds from freesound.org</p>
-  <p>The sounds below are licensed with "Attribution" Creative Commons license and should be credited:</p>
 
-</div>
 
 
 
@@ -86,6 +79,33 @@
     </div>
 
 
+
+
+</section>
+
+<section id="playlist" class="broad">
+  
+
+  <div id="audios" class="playerbody">
+
+
+           <div ng-repeat="sound in sounds track by sound.playerid" class="players">
+               <ass-player audiodata="sound"></ass-player>
+               <!--<button ng-click="sound.splice($index,1)">X</button>  -->
+            </div>
+
+
+  <div id="recList">
+    <h5 ng-show="recordings">Recordings</h5>
+    <ul id="recordingslist"></ul>
+  </div>
+
+  <div id="sources">
+  <p>This application uses several sounds from freesound.org</p>
+  <p>The sounds below are licensed with "Attribution" Creative Commons license and should be credited:</p>
+
+</div>
+  </div>
 
 
 </section>

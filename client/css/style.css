@@ -230,7 +230,7 @@ right: 0;
 }
 
 #playlist.broad {
-    width: calc(100% - 250px);
+    width: calc(100% - 260px);
     background-color: #fff;
     position: relative;
     
@@ -271,6 +271,9 @@ right: 0;
 #menu ul {
     width: 200px;
 }
+
+
+
 .fx {
     overflow: hidden;
     position: relative;
@@ -294,6 +297,15 @@ right: 0;
 }
 .menu nav {}
 
+#playerheader {
+  width: 100%;
+  position: fixed;
+  z-index: 100;
+  background-color: #fff;
+    height: 45px;
+
+}
+
 .menu {
     width: 100%;
     position: fixed;
@@ -302,6 +314,11 @@ right: 0;
     height: 35px;
     border-bottom: 5px solid red;
     background-color: white;
+}
+
+#playerheader  .playermenu{
+  position: relative;
+  width: 400px;
 }
 
 #audiomenu {
@@ -313,6 +330,23 @@ right: 0;
     width: 210px;
     padding: 5px;
 }
+
+#playermenu {
+    position: relative;
+    z-index: 100;
+
+    border-bottom: 5px solid red;
+    background-color: #fff;
+    padding: 5px;
+    color: #fff;
+}
+
+#playermenu .mastervol {
+  background-color: #000;
+  padding: 2px 5px 5px;
+  margin-right: 5px;
+}
+
 
 #chatmenu {
     position: fixed;
@@ -394,7 +428,7 @@ width: 24px;
 
 
 
-.menu .buttons {
+.menu .buttons, .playermenu .buttons{
     margin-top: 5px;
     z-index: 50;
     position: relative;
@@ -402,7 +436,7 @@ width: 24px;
     width: 120px;
     display: inline;
 }
-.menu button {
+.menu button, .playermenu button {
     padding: 0px;
     width: 25px;
     height: 25px;
@@ -416,6 +450,8 @@ width: 24px;
     font-size: 15px;
     
 }
+
+
 
 .buttons button:hover {
     background-color: #666;
@@ -662,7 +698,7 @@ input[type=range]:focus::-ms-fill-upper {
 #audios {
     background-color: #fff;
     padding-left: 5px;
-    height: calc(100% - 35px);
+    height: calc(100% - 55px);
     overflow: scroll;
     /*display: flex;
     flex-direction: column-reverse;*/
@@ -672,6 +708,13 @@ input[type=range]:focus::-ms-fill-upper {
     position: relative;
     top: 45px;
     height: calc(100% - 35px);
+    overflow: scroll;
+}
+
+.playerbody {
+    position: relative;
+    top: 45px;
+    height: calc(100% - 55px);
     overflow: scroll;
 }
 
