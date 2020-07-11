@@ -107,7 +107,7 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
       // use audiodata.playerid
       var req = {
         method: 'GET', 
-        url: '/freesound/sounds/' + audiodata.id + '/?fields=id,name,previews,images,duration,license,username,url' ,
+        url: '/freesound/sounds/' + audiodata.id + '/?fields=id,name,previews,images,duration,license,username,url,similar_sounds' ,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'

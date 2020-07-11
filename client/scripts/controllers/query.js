@@ -18,6 +18,8 @@ $scope.about= 'estreito';
 //$scope.query = 'gfun';
 
 
+
+//translations
     $scope.$watch('selectedLangOut', function(){
 	q = $scope.query;
 	lin = $scope.selectedLangIn;
@@ -48,7 +50,7 @@ $scope.about= 'estreito';
 	}
 
     	// console.log("making query");
-	$scope.makequery('/freesound/search/text/?query=' + $scope.query + '&fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=40');
+	$scope.makequery('/freesound/search/text/?query=' + $scope.query + '&fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60');
 	//$scope.gifquery('http://api.giphy.com/v1/gifs/search?q='+ $scope.query +'&api_key=E6C8oBZ2WghTaR2HujVpSZJML1fvTpm3&limit=5');
 
     });
@@ -159,6 +161,10 @@ $scope.singlequery = function(soundid) {
 }
 
 
+
+//next results
+
+
 $scope.makequery = function(urlbase) {
 
 
@@ -201,6 +207,10 @@ $scope.makequery = function(urlbase) {
       });
 
 }
+
+
+
+//try to use giphy api
 
 $scope.gifquery = function(urlgif){
 var req = {
