@@ -711,7 +711,14 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
 
       }
 
+
+//search similar sounds
        
+       $scope.searchsimilar = function(idsom){
+
+        //$rootscope.makequery('teste');
+        console.log('aqui')
+       }
 
 
 
