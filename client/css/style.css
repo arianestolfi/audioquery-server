@@ -783,6 +783,7 @@ transition: all .3s ease;
     width: 180px;
     overflow: hidden;
     margin-top: 5px;
+    height: 2em;
 }
 
 #audios img {
@@ -799,6 +800,9 @@ z-index: 1;
 
 }
 
+.playing {
+  outline: 5px solid #f0f;
+}
 
 .panctr span{
     position: relative;
@@ -807,8 +811,8 @@ z-index: 1;
 
 .volctr {
     position: relative;
-    width: 90px;
-    width: 100%;
+    width: 95px;
+
     z-index: 10;
 
 }
@@ -821,8 +825,9 @@ z-index: 1;
 }
 
 .volctr span{
-    position: relative;
-    top: -3px;
+    position: absolute;
+    bottom: 2px;
+    right: -40px;
 }
 
 .speedctr {
@@ -892,6 +897,14 @@ z-index: 1;
 .download {
     position: absolute;
     top: 5px;
+    right: 5px;
+    color: #999;
+    z-index: 30;
+}
+
+.searchsimilar {
+      position: absolute;
+    top: 20px;
     right: 5px;
     color: #999;
     z-index: 30;
