@@ -1,4 +1,4 @@
-app.controller('queryController', ['$scope','$window', '$http', '$location', '$filter', '$sce', '$interval',  function ($scope, $window, $http, $location, $filter, $sce, $interval ) {
+app.controller('queryController', ['$rootScope','$scope','$window', '$http', '$location', '$filter', '$sce', '$interval',  function ($rootScope, $scope, $window, $http, $location, $filter, $sce, $interval ) {
 
     $scope.languages = [ { name: "de", id: 1 }, { name: "bg", id: 2 }, { name: "hu", id: 3 }, { name: "nl", id: 4 }, { name: "el", id: 5 }, { name: "ka", id: 6 }, { name: "da", id: 7 }, { name: "it", id: 8 }, { name: "es", id: 9 }, { name: "ja", id: 10 }, { name: "fr", id: 11 }, { name: "fi", id: 12 }, { name: "ur", id: 13 }, { name: "tr", id: 14 }, { name: "pt", id: 15 }, { name: "ro", id: 16 }, { name: "ru", id: 17 },  { name: "en", id: 18 }  ];
     $scope.selectedLangIn = $scope.languages[14];
@@ -6,20 +6,20 @@ app.controller('queryController', ['$scope','$window', '$http', '$location', '$f
     var sounds = [];
     $scope.sounds = sounds;
 
-// Counter used to generate new player ids
-var playersCounter = 0;
+	// Counter used to generate new player ids
+	var playersCounter = 0;
 
-var query = $scope.query;
-$scope.recordings = false;
+	var query = $scope.query;
+	$scope.recordings = false;
 
-$scope.about= 'estreito';
-
-
-//$scope.query = 'gfun';
+	$scope.about= 'estreito';
 
 
+	//$scope.query = 'gfun';
 
-//translations
+
+
+	//translations
     $scope.$watch('selectedLangOut', function(){
 	q = $scope.query;
 	lin = $scope.selectedLangIn;
@@ -62,103 +62,103 @@ $scope.about= 'estreito';
     }
 
 
-$scope.trustSrc = function(src) {
-    return $sce.trustAsResourceUrl(src);
-}
+	$scope.trustSrc = function(src) {
+		return $sce.trustAsResourceUrl(src);
+	}
 
 
-$scope.singlequery = function(soundid) {
+	$scope.singlequery = function(soundid) {
 
 
-  var req = {
-    method: 'GET',
-    url: '/freesound/sounds/'+ soundid + '/?fields=id,name,previews,images,duration,license',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+	  var req = {
+		method: 'GET',
+		url: '/freesound/sounds/'+ soundid + '/?fields=id,name,previews,images,duration,license',
+		headers: {
+		  'Content-Type': 'application/json'
+		}
 
-  };
+	  };
 
-  $.ajax(req).
-      then(function(response) {
-        // when the response is available
-        console.log(response);
+	  $.ajax(req).
+		  then(function(response) {
+			// when the response is available
+			console.log(response);
 
-      $scope.$apply(function () {
-        $scope.response = response;
-        $scope.sound = response.results;
+		  $scope.$apply(function () {
+			$scope.response = response;
+			$scope.sound = response.results;
 
-      });
-      }, function(response) {
-        // error.
+		  });
+		  }, function(response) {
+			// error.
 
-        //ok
-      }, function(response) {
-        // error.
-      });
+			//ok
+		  }, function(response) {
+			// error.
+		  });
 
-}
+	}
 
     $scope.makeTranslationQuery = function(urlbase, query) {
 
-	console.log("[DVL] makeTranslationQuery");
-	console.log(urlbase)
+		console.log("[DVL] makeTranslationQuery");
+		console.log(urlbase)
 
-	try{
-	    t = document.getElementById("translations");
-	    t.innerHTML = "";
-	} catch(err){
-	    console.log(err);
-	}
+		try{
+			t = document.getElementById("translations");
+			t.innerHTML = "";
+		} catch(err){
+			console.log(err);
+		}
 
-    var req = {
-	method: 'GET',
-	url: urlbase,
-	headers: {
-	    'Content-Type': 'application/json',
-	    'app_id': "ef0a2bd1",
-	    'app_key': "497f43eacd7fc39f621ee8e9ae851315"
-	}
-    };
+		var req = {
+		method: 'GET',
+		url: urlbase,
+		headers: {
+			'Content-Type': 'application/json',
+			'app_id': "ef0a2bd1",
+			'app_key': "497f43eacd7fc39f621ee8e9ae851315"
+		}
+		};
 
-    $.ajax(req).
-    	then(function(response) {
+		$.ajax(req).
+			then(function(response) {
 
-            // when the response is available
-	    // try to parse the response as a JSON message
-	    console.log(response)
+				// when the response is available
+			// try to parse the response as a JSON message
+			console.log(response)
 
-	    try {
-		jr = JSON.parse(response);
-		t = document.getElementById("translations");
-		if ((t !== undefined) && (t !== null)){
-		    for (word in jr["text"]){
-			if (jr["text"][word] !== undefined) {
-			    t.innerHTML = jr["text"][word];
+			try {
+			jr = JSON.parse(response);
+			t = document.getElementById("translations");
+			if ((t !== undefined) && (t !== null)){
+				for (word in jr["text"]){
+				if (jr["text"][word] !== undefined) {
+					t.innerHTML = jr["text"][word];
+				}
+				else {
+					t.innerHTML = "";
+				}
+				}
 			}
 			else {
-			    t.innerHTML = "";
+				t.innerHTML = "";
 			}
-		    }
-		}
-		else {
-		    t.innerHTML = "";
-		}
-	    } catch(err) {
-		console.log(err)
-		console.log("No translations available")
-		t = document.getElementById("translations");
-		t.innerHTML = "";
-	    }
+			} catch(err) {
+			console.log(err)
+			console.log("No translations available")
+			t = document.getElementById("translations");
+			t.innerHTML = "";
+			}
 
-    	}, function(response) {
-            // error.
-            //ok
-    	}, function(response) {
-            // error.
+			}, function(response) {
+				// error.
+				//ok
+			}, function(response) {
+				// error.
 
-    	});
-}
+			});
+	}
 
 
 
@@ -180,11 +180,12 @@ $scope.makequery = function(urlbase) {
   $.ajax(req).
       then(function(response) {
         // when the response is available
-        console.log(response);
-
-      $scope.$apply(function () {
+        //console.log(response);
+        console.log('\n\n###########################\n'+urlbase+'\n\n###########################\n');
+		console.log(response);
+		$scope.$apply(function () {
           $scope.response = response;
-          $scope.results = response.results;
+          $rootScope.results = response.results;
           //change the next link
           if (response.next){
         $scope.next = response.next;
@@ -508,6 +509,16 @@ $scope.startRecording = function () {
     var now = new Date();
     $scope.recordings = true;
     recorder.clear();
+  }
+  
+  //try to search similar sounds
+  $scope.searchsimilar = function(soundid){
+	  // /apiv2/sounds/<sound_id>/similar/
+	  // '/sounds/' + soundid + '/similar/?fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60'
+	  // '/freesound/search/text/?query=' + $scope.query + '&fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60'
+	  query = '/freesound/sounds/' + soundid + '/similar/?fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60';
+	  $scope.makequery(query);
+	  console.log('id:'+soundid + '\n'+query);
   }
 
   function createDownloadLink() {

@@ -82,8 +82,13 @@
     sources = [];
 
 document.addEventListener('touchstart', function () {
+	//correct error when query is undefined
+	try{
     document.getElementById('blip')[0].play();
     document.getElementById('blip')[0].pause();
+	}catch(e){
+	
+	}
 });
 
  

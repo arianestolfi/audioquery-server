@@ -713,13 +713,12 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
 
 
 //search similar sounds
-       
-       $scope.searchsimilar = function(idsom){
-
-        //$rootscope.makequery('teste');
-        console.log('aqui')
+ /*      
+       $scope.searchsimilar = function(soundid){
+			$rootScope.makequery('/freesound/search/text/?query=' + $rootScope.query + '&fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60');
+			console.log('id:'+soundid);
        }
-
+*/
 
 
 
