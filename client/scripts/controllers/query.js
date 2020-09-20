@@ -516,9 +516,9 @@ $scope.startRecording = function () {
 	  // /apiv2/sounds/<sound_id>/similar/
 	  // '/sounds/' + soundid + '/similar/?fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60'
 	  // '/freesound/search/text/?query=' + $scope.query + '&fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60'
-	  query = '/freesound/sounds/' + soundid + '/similar/?fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60';
-	  $scope.makequery(query);
-	  console.log('id:'+soundid + '\n'+query);
+	  busca = '/freesound/sounds/' + soundid + '/similar/?fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60';
+	  $scope.makequery(busca);
+	  
   }
 
   function createDownloadLink() {

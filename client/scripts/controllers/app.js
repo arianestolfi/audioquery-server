@@ -721,6 +721,53 @@ app.directive ('assPlayer', ['$rootScope', function($rootScope){
 */
 
 
+$scope.searchsimi = function(soundid) {
+
+
+urlbase = '/freesound/sounds/' + soundid + '/similar/?fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60';
+
+
+  var req = {
+   method: 'GET',
+   url: urlbase,
+   headers: {
+     'Content-Type': 'application/json'
+   }
+
+  };
+
+  $.ajax(req).
+      then(function(response) {
+        // when the response is available
+        //console.log(response);
+        console.log('\n\n###########################\n'+urlbase+'\n\n###########################\n');
+    console.log(response);
+    $scope.$apply(function () {
+          $scope.response = response;
+          $rootScope.results = response.results;
+          //change the next link
+          if (response.next){
+        $scope.next = response.next;
+        $scope.next = $scope.next.replace("http://freesound.org/apiv2/", "/freesound/");
+      //console.log($scope.next);
+        }
+        //change the previous link
+        if (response.previous){
+        $scope.previous = response.previous;
+        $scope.previous = $scope.previous.replace("http://freesound.org/apiv2/", "/freesound/");
+        }
+      });
+      }, function(response) {
+        // error.
+
+        //ok
+      }, function(response) {
+        // error.
+
+      });
+
+}
+
 
       }, function(response) {
         // error.
