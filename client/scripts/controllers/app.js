@@ -58,18 +58,24 @@ app.config(function ($routeProvider, $locationProvider, $httpProvider) {
       .when('/chat', {
             templateUrl: 'parts/chat.html',
             controller: 'queryController'
-        }).when('/connect', {
+        })
+      .when('/connect', {
             templateUrl: 'parts/connect.html',
             controller: 'queryController'
-        }).when('/player/:sounds', {
+        })
+        .when('/player/:sounds', {
             templateUrl: 'parts/player.html',
             controller: 'queryController'
         })
       .when('/player', {
             templateUrl: 'parts/player.html',
             controller: 'queryController'
+        })
+      .when('/list', {
+            templateUrl: 'parts/list.html',
+            controller: 'queryController'
         }).otherwise({
-        templateUrl: 'parts/list.html',
+        templateUrl: 'parts/player.html',
             controller: 'queryController'
     });
 
