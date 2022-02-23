@@ -79,9 +79,9 @@ app.config(function ($routeProvider, $locationProvider, $httpProvider) {
             controller: 'queryController'
     });
 
-            //$locationProvider.html5Mode(true);
+//$locationProvider.html5Mode(true);
 
-  //headers http
+//headers http
 $httpProvider.defaults.useXDomain = true;
 $httpProvider.defaults.withCredentials = true;
 delete $httpProvider.defaults.headers.common["X-Requested-With"];

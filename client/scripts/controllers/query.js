@@ -189,13 +189,13 @@ $scope.makequery = function(urlbase) {
           //change the next link
           if (response.next){
         $scope.next = response.next;
-        $scope.next = $scope.next.replace("http://freesound.org/apiv2/", "/freesound/");
+        $scope.next = $scope.next.replace("https://freesound.org/apiv2/", "/freesound/");
       //console.log($scope.next);
         }
         //change the previous link
         if (response.previous){
         $scope.previous = response.previous;
-        $scope.previous = $scope.previous.replace("http://freesound.org/apiv2/", "/freesound/");
+        $scope.previous = $scope.previous.replace("https://freesound.org/apiv2/", "/freesound/");
         }
       });
       }, function(response) {
@@ -234,13 +234,13 @@ var req = {
           //change the next link
           if (response.next){
         $scope.next = response.next;
-        $scope.next = $scope.next.replace("http://freesound.org/apiv2/", "/freesound/");
+        $scope.next = $scope.next.replace("https://freesound.org/apiv2/", "/freesound/");
       //console.log($scope.next);
         }
         //change the previous link
         if (response.previous){
         $scope.previous = response.previous;
-        $scope.previous = $scope.previous.replace("http://freesound.org/apiv2/", "/freesound/");
+        $scope.previous = $scope.previous.replace("https://freesound.org/apiv2/", "/freesound/");
         }
       });
       }, function(response) {
