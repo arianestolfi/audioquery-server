@@ -71,6 +71,14 @@ app.config(function ($routeProvider, $locationProvider, $httpProvider) {
             templateUrl: 'parts/player.html',
             controller: 'queryController'
         })
+      .when('/multiplayer', {
+          templateUrl: 'parts/multiplayer.html',
+          controller: 'queryController'
+      })  
+      .when('/multiplayer/:sounds', {
+        templateUrl: 'parts/multiplayer.html',
+        controller: 'queryController'
+    })
       .when('/list', {
             templateUrl: 'parts/list.html',
             controller: 'queryController'
@@ -100,7 +108,6 @@ app.directive('ngMain', function() {
 
 //custom player for audioquery
 app.directive ('assPlayer', ['$rootScope', function($rootScope){
-
   return {
     restrict: 'E',
     //transclude: true,
@@ -787,6 +794,650 @@ urlbase = '/freesound/sounds/' + soundid + '/similar/?fields=id,name,previews,ta
 
 
 
+
+
+
+// custom player for multiplayer
+app.directive ('multiPlayer', ['$rootScope', function($rootScope){
+  return {
+    restrict: 'E',
+    //transclude: true,
+    scope: {
+      'audiodata' : '='
+    },
+    templateUrl: 'parts/multi-player.html',
+    link: function ($scope, element, attribute) {
+      var audiodata = $scope.audiodata;
+      // use audiodata.playerid
+      var req = {
+        method: 'GET', 
+        url: '/freesound/sounds/' + audiodata.id + '/?fields=id,name,previews,images,duration,license,username,url,similar_sounds' ,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      };
+
+      $.ajax(req).
+        then(function(response) {
+        // when the response is available
+
+          $scope.$apply(function () {
+            $scope.freesound = response;
+            $scope.soundsrc = $scope.freesound.previews['preview-hq-mp3'];
+            // var sound = ngAudio.load($scope.freesound.previews['preview-hq-mp3']);
+
+          }); 
+
+          var itemid = $scope.freesound.id;
+          var itemsrc = $scope.freesound.previews['preview-hq-mp3'];
+          //create audio element
+          // console.log($scope.audiodata.newsound);
+          var itemauthor = $scope.freesound.username;
+          var credits = document.createElement("span");
+          var license = $scope.freesound.license;
+          credits.innerHTML =  'sound: ' + $scope.freesound.name + ' by: ' + itemauthor + '; ';
+          
+          if (license == "http://creativecommons.org/licenses/by/3.0/") {
+                      document.getElementById('sources').appendChild(credits);
+          }
+          //this has to be replaced
+          
+          
+          var imgid = '#img' + audiodata.playerid;
+          var divid = 'audio' + audiodata.playerid;
+
+          $scope.windowid = 'imgwindow' + audiodata.playerid;
+          $scope.containerid = 'windowcont' + audiodata.playerid;
+
+          var sound      = document.createElement('audio');
+
+          //drag boxes ids
+          $scope.loopstart = 'start' + audiodata.playerid;
+          $scope.loopend = 'end' + audiodata.playerid;
+
+          //settings
+
+          //starts at zero
+          $scope.seekpos= 0;
+          $scope.offset = 0;
+          $scope.elapsed = 0;
+          //unaware of AudioContext (do webkit audioContext)
+          $scope.startedAt = 0;
+          $scope.pausedAt = 0;
+
+          //no loop and max coverage
+          $scope.loop = false;
+          $scope.newloopstart = 0;
+          $scope.newloopend = $scope.freesound.duration;
+
+          $scope.soundvolume = 0.5;
+          $scope.soundpan = 0;
+
+          $scope.soundspeed = 1;     
+          $scope.pitchshifting = false;
+          
+          speedslider = document.getElementById("speed-" + audiodata.playerid);
+          $scope.soundspeed = speedslider.value;
+
+          var request = new XMLHttpRequest();
+                request.open('GET', itemsrc, true);
+                request.responseType = 'arraybuffer';
+                request.addEventListener('load', function() {
+                    audioCtx.decodeAudioData(
+                        request.response,
+                        function(buffer) {
+
+                          //once we have the buffer, create the Sound                            
+                          sound = new $scope.Sound(buffer);
+                           
+                        },
+                        function(e) {
+                            console.error('ERROR: context.decodeAudioData:', e);
+                        }
+                    );
+                });
+                request.send();
+
+
+          $scope.Sound = function(buffer){
+
+            $scope.sourceNode = null;
+            $scope.soundspeed = 1;
+
+            $scope.play =  function() {
+
+              $scope.sourceNode = audioCtx.createBufferSource();
+              $scope.panNode = audioCtx.createStereoPanner();
+              $scope.sourceNode.connect($scope.panNode);
+
+              $scope.volume = audioCtx.createGain();
+              $scope.panNode.connect($scope.volume);
+              
+              $scope.volume.connect(gainNode);
+
+
+              //console.log(buffer);
+              $scope.sourceNode.buffer = buffer;
+              $scope.sourceNode.loop = $scope.loop;
+              $scope.setspeed($scope.soundspeed);
+              $scope.setvolume($scope.soundvolume);
+              $scope.offset = $scope.seekpos;
+               //console.log($scope.offset + "check offset" );
+              $scope.startedAt = audioCtx.currentTime - $scope.offset;
+              $scope.timetoend = $scope.newloopend - $scope.offset; 
+
+              //check if this works with the loop
+              $scope.sourceNode.start(0, $scope.offset, $scope.timetoend);
+              $scope.cursor();
+              //console.log("playing");
+              $scope.onplay();
+              $scope.playing = true;
+
+              $scope.sourceNode.onended = function(event) {
+
+                if (!$scope.loop){
+
+                 $scope.$apply(function () {
+                  $scope.stop();
+                  });
+                } else {
+
+                  $scope.$apply(function () {
+                    if ($scope.newloopstart<$scope.newloopend){
+                  //$scope.pause();
+                  $scope.loopupdate();
+                  $scope.offset = $scope.newloopstart;
+                  $scope.seekpos = $scope.offset;
+                  $scope.play();
+                }else{
+                  $scope.stop();
+                }
+
+                  });
+                }
+
+                console.log('ended');
+                //console.log($scope.newloopstart);
+                //console.log($scope.newloopend);
+                
+              }              
+          };
+
+          $scope.pause = function() {
+                    //console.log('started at ' + audioCtx.currentTime);
+                      $scope.elapsed = audioCtx.currentTime - $scope.startedAt;
+
+                      $scope.onpause();
+                      $scope.stop();
+                      $scope.playing = false;
+
+                      $scope.seekpos = $scope.elapsed;
+                      //this works fine;
+                      //$scope.pausedAt = elapsed;
+                      $scope.offset = $scope.elapsed;
+                      $scope.cursor();
+
+
+                  };
+
+                   $scope.stop = function() {
+                      if ($scope.sourceNode) {          
+                          $scope.sourceNode.disconnect();
+                          $scope.sourceNode.stop(0);
+                          $scope.sourceNode = null;
+                      }
+                      $scope.pausedAt = 0;
+                      $scope.startedAt = 0;
+                      //$scope.offset=0;
+                      $scope.offset=$scope.newloopstart;
+                      $scope.seekpos = $scope.newloopstart;
+                      //$scope.seekpos = 0;
+
+                      $scope.playing = false;
+                  };
+
+                  $scope.getPlaying = function() {
+                      return $scope.playing;
+                  };
+                
+                  $scope.getCurrentTime = function() {
+                      
+
+                      if($scope.offset) {
+                          //console.log($scope.offset + "is offset");
+                          //return $scope.elapsed;
+                          //console.log("offset");
+                      //console.log(audioCtx.currentTime - $scope.startedAt + "offset");
+                          return audioCtx.currentTime - $scope.startedAt;
+                          //return $scope.seekpos;
+
+                      }
+                      else if($scope.startedAt) {
+
+                
+
+                          return audioCtx.currentTime - $scope.startedAt;
+                          //console.log("started");
+
+                          //return audioCtx.currentTime - $scope.startedAt - $scope.newloopstart;
+                      }
+                      console.log("else zero");
+                      return 0;
+                  };
+
+
+
+            $scope.loopupdate = function(time){
+              if ($scope.sourceNode){
+                  
+                  $scope.sourceNode.loop = $scope.loop;
+                  $scope.sourceNode.loopStart = $scope.newloopstart;
+                  $scope.sourceNode.loopEnd = $scope.newloopend;
+
+
+                
+                  console.log("loop updated");
+              }
+            }
+
+                  $scope.setloopstart = function(){
+
+                    var element = document.getElementById($scope.loopstart);
+                    var boxwidth = angular.element(document.getElementById($scope.containerid))[0].clientWidth;
+                     //console.log("pix start: " + element.offsetLeft);
+                    
+                    $scope.newloopstart = element.offsetLeft * $scope.freesound.duration / boxwidth;                   
+                    console.log("sample start: " +  $scope.newloopstart);
+                
+                    $scope.loopupdate();
+                    // if ($scope.sourceNode){
+                    //   $scope.sourceNode.loopStart = $scope.newloopstart;
+                      
+                    // }
+
+                  }
+
+                    $scope.setloopend = function(){
+                    
+                    var element = document.getElementById($scope.loopend);
+
+                    var boxwidth = angular.element(document.getElementById($scope.containerid))[0].clientWidth;
+                     //console.log("pix end: " + element.offsetLeft);
+                                  
+                    
+
+                 
+                    $scope.newloopend = element.offsetLeft * $scope.freesound.duration / boxwidth;
+
+                    console.log("sample end: " +  $scope.newloopend);
+
+
+                  }
+
+
+                
+                  ////////////////////////
+                  //updates the value of the player with the new value
+                  $scope.setseek = function(val){
+
+                    // $scope.offset=val;
+                    // console.log($scope.offset);
+                    
+
+                    if ($scope.getPlaying()){
+
+
+
+
+
+                      $scope.pause();
+
+                    $scope.offset=val;
+
+              
+                    
+
+                    $scope.play();
+
+                    }
+                    else{
+                    $scope.offset=val;
+
+                    }
+                  }
+
+                  seekslider = document.getElementById("slider-" + audiodata.playerid);
+                 
+           
+                  
+
+                
+                  $scope.getDuration = function() {
+                    return buffer.duration;
+                  };
+
+                  $scope.setvolume = function(val){
+                  //$scope.sourceNode.volume = val;
+                   if ($scope.sourceNode){
+                    $scope.volume.gain.value = val;
+                    }
+                    else {
+                      //$scope.playpause();
+                      $scope.soundvolume = val;
+                    }
+                    
+                    //gainNode.gain.value = val;
+                    borderval = val + 'px';
+
+                  }
+
+                    $scope.setpan = function(val){
+                  //$scope.sourceNode.volume = val;
+                   if ($scope.sourceNode){
+                    $scope.panNode.pan.value = val;
+                    console.log(val)
+                    }
+                    else {
+                      //$scope.playpause();
+                      $scope.soundpan = val;
+                    }
+                    
+                    //gainNode.gain.value = val;
+                    borderval = val + 'px';
+
+                  }
+
+                    
+              // $scope.pan = $scope.panNode.pan.setValueAtTime(panControl.value, audioCtx.currentTime);
+              
+
+                  $scope.setspeed = function(val){
+                    if ($scope.sourceNode){
+                    $scope.sourceNode.playbackRate.value = val;
+                    }
+                    else {
+
+                      $scope.soundspeed = val;
+                      //console.log("you have to play first");
+                    }
+                  }
+
+
+
+                  $scope.playpause = function(){
+                    if ($scope.getPlaying()) {
+                      $scope.pause();
+                      $scope.playing = false;
+
+                    } else {
+
+                      $scope.play();
+                      $scope.playing = true;
+                      $scope.loopupdate();
+                                                
+
+                      
+                    }
+                  }
+
+               
+
+                  if (audiodata.newsound === 1) {
+                    //sound.autoplay = 'autoplay';
+                    //play the sound invoking the playsound function
+                    //$scope.isPlaying = true;
+                    $scope.playing = false;
+
+
+
+                     $scope.$apply(function () {
+
+                      $scope.playpause();
+                      $scope.playing = true;
+                    });
+
+                    //$scope.playing = false;
+                    
+
+                    
+                  }
+                  counter=0;
+
+                   // put element on playlist
+                  document.getElementById(divid).appendChild(sound);
+
+                }
+
+              var init = function (buffer){
+                //console.log(buffer);
+                
+                //$scope.playing=true;
+              }
+
+  
+
+          $scope.onplay = function() {
+
+
+            //$scope.cursor();
+
+            if(!$scope.loop){
+
+              $scope.$parent.logger2('played: ' + $scope.freesound.name);
+               // window.setInterval(function() {
+
+               //    $scope.$apply(function () {
+               //          $scope.seekpos = $scope.getCurrentTime();
+               //          });
+               //          //console.log('hi' + $scope.timenow);
+               //        }, 100); 
+              //console.log("currentTime" + $scope.getCurrentTime());
+            }
+            else{
+              if(counter<1){
+                $scope.$parent.logger2('looping: ' + $scope.freesound.name);
+                 // window.setInterval(function() {
+
+                 //  $scope.$apply(function () {
+                 //        $scope.seekpos = $scope.getCurrentTime();
+                 //        });
+                 //        //console.log('hi' + $scope.timenow);
+                 //      }, 100); 
+                //console.log("currentTime" + $scope.getCurrentTime());
+              }
+              counter++;
+              //console.log("currentTime" + $scope.getCurrentTime());
+            }
+
+
+            // $scope.$apply(function () {
+            //   $scope.seekpos = $scope.getCurrentTime();
+              
+            // });
+          }
+
+          $scope.onpause = function() {
+              $scope.$parent.logger2('paused: ' + $scope.freesound.name);
+              //$scope.cursor();
+          }
+
+          $scope.removethis = function() {
+          //$scope.$parent.sounds.splice(index, 1);
+          //$scope.pause();
+          //line inserted to corret problem of removing during loop
+          $scope.loop = false;
+          $scope.stop();
+          $scope.$parent.removeitem(audiodata.playerid);
+          $scope.$parent.logger2('removed: ' + $scope.freesound.name);
+          
+        }
+
+       
+
+
+          $scope.updateSeek = function() {
+            if ($scope.sourceNode){
+
+              
+              $scope.$apply(function () {
+                $scope.seekpos = $scope.elapsed;
+              });
+            // $scope.seekpos = $scope.getCurrentTime();
+            }
+            else{
+
+             }
+          }
+
+      $scope.cursor = function() {
+        window.setInterval(function() {
+            if ($scope.sourceNode){
+              if ($scope.seekpos<$scope.newloopend){
+                  $scope.$apply(function () {
+                    $scope.seekpos = $scope.getCurrentTime();
+                    // $scope.updateSeek();
+                    });
+                  //console.log($scope.getCurrentTime() + "currentTime");
+              }else if ($scope.seekpos >= $scope.newloopend && !$scope.loop){
+
+                $scope.stop();
+                //$scope.offset = $scope.newloopstart;
+                $scope.$apply(function () {
+                //$scope.seekpos = $scope.newloopstart;
+                  console.log("do something");
+
+                });
+              }
+              else if ($scope.seekpos >= $scope.newloopend && $scope.loop){
+                 $scope.stop();
+
+                 // console.log("do something");
+                //$scope.offset = $scope.newloopstart;
+                if ($scope.newloopstart>= $scope.newloopend){
+                  $scope.$apply(function () {    
+                  $scope.newloopstart=0;
+                  // $scope.seekpos=$scope.newloopstart;
+                  $scope.loopupdate();
+                  });
+                }
+                $scope.$apply(function () {
+                //$scope.seekpos = $scope.newloopstart;
+                  console.log("do something");
+                  // $scope.pause();
+                  $scope.loopupdate();
+                  $scope.offset = $scope.newloopstart;
+                  $scope.seekpos = $scope.offset;
+                   $scope.play();
+                });
+              }
+          }else{
+
+            if ($scope.newloopstart >= $scope.newloopend){
+            console.log("no sourceNode");
+              $scope.$apply(function () {
+
+                $('.loopstart').css('position', 'absolute');
+                $('.loopstart').css('left', 0); //or wherever you want it
+
+                $scope.newloopstart = 0;
+                $scope.seekpos = 0;
+ 
+                });
+            }
+          }
+                      
+        }, 1);
+
+        }
+
+
+
+        $scope.getmousex = function(e){
+                      
+          var cont = document.getElementById("img" + $scope.containerid);
+          var mybox = cont.clientWidth;
+          console.log(mybox + "mybox");
+          //$scope.pause();
+          $scope.newoffset = (e.pageX - cont.offsetLeft)* $scope.freesound.duration / mybox;
+          console.log("seek: " +  $scope.newoffset);
+          //$scope.play();
+
+      }
+
+
+//search similar sounds
+ /*      
+       $scope.searchsimilar = function(soundid){
+			$rootScope.makequery('/freesound/search/text/?query=' + $rootScope.query + '&fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60');
+			console.log('id:'+soundid);
+       }
+*/
+
+
+$scope.searchsimi = function(soundid) {
+
+
+urlbase = '/freesound/sounds/' + soundid + '/similar/?fields=id,name,previews,tags,images,duration,license&filter=license:("Creative Commons 0" OR "Attribution")&page_size=60';
+
+
+  var req = {
+   method: 'GET',
+   url: urlbase,
+   headers: {
+     'Content-Type': 'application/json'
+   }
+
+  };
+
+  $.ajax(req).
+      then(function(response) {
+        // when the response is available
+        //console.log(response);
+        console.log('\n\n###########################\n'+urlbase+'\n\n###########################\n');
+    console.log(response);
+    $scope.$apply(function () {
+          $scope.response = response;
+          $rootScope.results = response.results;
+          //change the next link
+          if (response.next){
+        $scope.next = response.next;
+        $scope.next = $scope.next.replace("http://freesound.org/apiv2/", "/freesound/");
+      //console.log($scope.next);
+        }
+        //change the previous link
+        if (response.previous){
+        $scope.previous = response.previous;
+        $scope.previous = $scope.previous.replace("http://freesound.org/apiv2/", "/freesound/");
+        }
+      });
+      }, function(response) {
+        // error.
+
+        //ok
+      }, function(response) {
+        // error.
+
+      });
+
+}
+
+
+      }, function(response) {
+        // error.
+        //ok
+      });
+
+    },
+
+  }
+}]);
+
+
+
+
+
+
 app.directive('resizable', function(){
 
     var resizableConfig = {containment: ".imgcontainer"};
@@ -917,3 +1568,7 @@ function findinarray(arraytosearch, key, valuetosearch) {
     }
     return null;
     }
+
+
+
+    
