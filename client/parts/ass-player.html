@@ -39,6 +39,23 @@
 
 <div class="sliders">
 
+<p class="smalltext silencectr">
+    <input
+        type="range"
+        min="0"
+        max="200"
+        value="0"
+        step="1"
+        id="silence-{{audiodata.playerid}}"
+        ng-model="silence"
+        ng-change="setsilence(silence)">
+    </input>
+
+    <span class="infotxt">
+        silence: {{silence | number: 0}}%
+    </span>
+</p>
+
 
 <p class="smalltext panner">
 	<input type="range" min="-1" value="{{soundpan}}" max="1" step="any" id="pan-{{audiodata.playerid}}" ng-model="soundpan" ng-change="setpan(soundpan)"></input> <span class="infotxt">pan: {{soundpan | number: 2}} </span> </p>
