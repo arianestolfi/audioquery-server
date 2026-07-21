@@ -23,7 +23,9 @@
 
     </span>
 
-    <button id="dragItems"> Drag </button>
+<button id="dragItems" ng-click="toggleDrag()" style="padding: 5px 10px; margin: 5px;">
+    {{draggingEnabled ? 'Freeze' : 'Drag'}}
+</button>
 
  </div>
 

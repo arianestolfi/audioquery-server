@@ -331,6 +331,8 @@ $scope.player = function(itemid) {
     }
 
 
+
+    
   //adding to sounds
   $scope.sounds.unshift({id: itemid, newsound: 1, playerid: playerid});
 
@@ -386,16 +388,76 @@ $scope.logger2 = function(message) {
 
 };
 
+
+$rootScope.draggingEnabled = false;
+
+$scope.toggleDrag = function() {
+    $rootScope.draggingEnabled = !$rootScope.draggingEnabled;
+
+    if ($rootScope.draggingEnabled) {
+        // We initialize sortable on the container #audios
+        // and tell it to use the new .drag-handle as the only valid click area
+        $("#audios").sortable({
+            handle: ".drag-handle",
+            placeholder: "ui-state-highlight",
+            tolerance: "pointer",
+            start: function(e, ui) {
+                // Helps maintain layout during drag
+                ui.placeholder.height(ui.item.height());
+                ui.placeholder.width(ui.item.width());
+            },
+            stop: function(event, ui) {
+                $scope.syncSortableOrder();
+            }
+        });
+        $("#audios").sortable("enable");
+        console.log("Sortable Enabled");
+    } else {
+        if ($("#audios").data("ui-sortable")) {
+            $("#audios").sortable("destroy");
+        }
+        console.log("Sortable Disabled");
+    }
+};
+
+$scope.syncSortableOrder = function() {
+    var newSoundOrder = [];
+    
+    // We look for each .player div inside #audios
+    $("#audios .player").each(function() {
+        var domId = $(this).attr('id'); // Get "sound0", "sound1" etc.
+        if (domId) {
+            var playerid = parseInt(domId.replace('sound', ''));
+            
+            // Find the object in the current array
+            var soundObj = $scope.sounds.filter(function(s) {
+                return s.playerid === playerid;
+            })[0];
+            
+            if (soundObj) {
+                newSoundOrder.push(soundObj);
+            }
+        }
+    });
+
+    // Apply the new order to the scope and update URL
+    $scope.$apply(function() {
+        $scope.sounds = newSoundOrder;
+        $scope.updateAddress(); 
+        console.log("Order synced to URL");
+    });
+};
+
 $scope.updateAddress = function() {
 
 var curadress = $location.path();
 
 if (curadress === "/"){
  curadress = $location.path();
- console.log(curadress + "slash");
+ //console.log(curadress + "slash");
 }else {
   curadress = $location.path() + "/";
-  console.log(curadress + "no slash");
+  //console.log(curadress + "no slash");
 }
   curadress = curadress.split('sounds=')[0];
   var newadress = $scope.sounds.length > 0 ? 'sounds=' : '';

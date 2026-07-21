@@ -1389,3 +1389,53 @@ width: 100%;
 #results .smallimg {
   height: 50px;
 }
+
+/* This is the empty dashed box that shows where the item will land */
+.ui-state-highlight {
+    width: 200px;
+    height: 120px; /* Adjust to match your player height roughly */
+    border: 1px solid black;
+    background: rgba(255, 0, 0, 0.05);
+    float: left;
+    margin: 0 5px 5px 0;
+    visibility: visible !important;
+}
+
+/* Ensure players stay in a grid while dragging */
+#audios {
+    min-height: 200px;
+}
+
+.drag-handle {
+    width: 100%;
+    height: 20px;
+    background: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: move;
+    margin-bottom: 2px;
+}
+
+.dragicon {
+    width: 15px;
+    height: 15px;
+    display: block;
+    line-height: 0;
+}
+
+.dragicon svg {
+    width: 15px;
+    height: 15px;
+    fill: white; /* Makes the icon visible on the red background */
+}
+
+#dragItems {
+  background-color: #000;
+  color: #fff;
+  width: 70px;
+  text-align: center;
+  font-size: small;
+  position: relative;
+  top: 0.5px;
+}
