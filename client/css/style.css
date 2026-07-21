@@ -89,6 +89,7 @@ section {
     top:0px !important;
     background-color: red;
     z-index: 30;
+    position: absolute;
 
      }
 
@@ -114,10 +115,8 @@ section {
   top:-50px;
 }
 
-.loopend .pointer {
-position: absolute;
-right: 0;
-}
+.loopstart .pointer { left: 0; }
+.loopend .pointer { right: 0; }
 
 .dragcontainer{
     border-top: 1px solid red;
@@ -141,6 +140,8 @@ right: 0;
     height: 50px;
     z-index: 0;
     width: 100%; 
+    background: #000;
+
 }
 
 .imgwindow {
@@ -1276,3 +1277,62 @@ width: 100%;
 
 
 
+.imgcontainer {
+    position: relative;
+    height: 50px; /* Adjust if your spectrogram is taller */
+    width: 100%;
+    background: #000;
+    overflow: visible; /* Required so pointers can "shoot up" into this div */
+}
+
+#playlist .smallimg {
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.dragcontainer {
+    border-top: 1px solid red;
+    border-bottom: 1px solid red;
+    height: 15px; /* Updated to 15px */
+    width: 100%;
+    position: relative;
+    background: #111;
+    margin-top: 2px;
+}
+
+.draggable { 
+    height: 15px !important; /* Updated to 15px */
+    width: 10px !important;
+    background-color: red !important;
+    position: absolute !important;
+    top: 0px !important;
+    z-index: 30;
+    cursor: ew-resize;
+}
+
+/* Pointer lines reaching up over the spectrogram */
+.draggable .pointer {
+    height: 70px; /* Adjusted for 15px handle */
+    width: 1px;
+    background-color: #fff;
+    position: absolute;
+    top: -55px; /* Pulls line up into spectrogram */
+}
+
+/* Original Look: Start pointer on left, End pointer on right */
+.loopstart .pointer { left: 0; }
+.loopend .pointer { right: 0; }
+
+.imgcontainer {
+    position: relative;
+    height: 50px;
+    width: 100%;
+    background: #000;
+    overflow: visible;
+}
+
+#results .smallimg {
+  height: 50px;
+}
