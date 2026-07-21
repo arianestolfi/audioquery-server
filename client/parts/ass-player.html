@@ -46,6 +46,15 @@
                     <input type="range" min="0.1" value="1" max="4" step="any" ng-model="soundspeed" ng-change="setspeed(soundspeed)"></input>
                     <span class="infotxt">speed: {{soundspeed | number: 2}} </span>  
                 </p>
+<p class="smalltext filterctr">
+    <input type="range" min="-100" max="100" step="1" 
+           ng-model="soundfilter" 
+           ng-change="setfilter(soundfilter)">
+    <span class="infotxt">
+        <!-- If slider is 0, show Flat. Otherwise show the Type and the Hz -->
+        filter: {{soundfilter == 0 ? 'Flat' :  (filterFreqDisplay | number: 0) + ' Hz'}}
+    </span>
+</p>
             </div>
         </a>
 
