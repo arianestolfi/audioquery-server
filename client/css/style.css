@@ -910,6 +910,13 @@ z-index: 1;
     z-index: 30;
 }
 
+.addsilence {
+  position: absolute;
+    top: 40px;
+    right: 5px;
+    color: #999;
+    z-index: 30;
+}
 
 /* about */
 

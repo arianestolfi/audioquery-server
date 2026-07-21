@@ -100,199 +100,214 @@ app.directive('ngMain', function() {
 
 //custom player for audioquery
 app.directive('assPlayer', ['$rootScope', '$timeout', function($rootScope, $timeout) {
-
     return {
         restrict: 'E',
-        scope: {
-            'audiodata': '='
-        },
+        scope: { 'audiodata': '=' },
         templateUrl: 'parts/ass-player.html',
         link: function($scope, element, attribute) {
             var audiodata = $scope.audiodata;
-            $scope.silenceTimer = null; 
+            var counter = 0;
 
-            // 1. SAFETY: Initialize AudioContext if it doesn't exist
-            if (typeof audioCtx === 'undefined') {
-                window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (typeof gainNode === 'undefined') {
-                window.gainNode = audioCtx.createGain();
-                gainNode.connect(audioCtx.destination);
-            }
+            // --- 1. INITIAL STATE ---
+            $scope.playing = false;
+            $scope.seekpos = 0;
+            $scope.newloopstart = 0;
+            $scope.newloopend = 0;
+            $scope.soundspeed = 1;
+            $scope.soundvolume = 0.5;
+            $scope.soundpan = 0;
+            
+            // Dynamic IDs
+            $scope.windowid = 'imgwindow' + audiodata.playerid;
+            $scope.containerid = 'windowcont' + audiodata.playerid;
+            $scope.loopstart = 'start' + audiodata.playerid;
+            $scope.loopend = 'end' + audiodata.playerid;
 
+            // --- 2. LOGGING HANDLERS ---
+            $scope.onplay = function() {
+                if (!$scope.loop) $scope.$parent.logger2('played: ' + $scope.freesound.name);
+                else { if (counter < 1) $scope.$parent.logger2('looping: ' + $scope.freesound.name); counter++; }
+            };
+            $scope.onpause = function() { $scope.$parent.logger2('paused: ' + $scope.freesound.name); };
+
+            // --- 3. AUDIO ENGINE ---
+            $scope.Sound = function(buffer) {
+                $scope.sourceNode = null;
+
+                $scope.play = function() {
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                    $scope.stopNodes(); 
+
+                    $scope.sourceNode = audioCtx.createBufferSource();
+                    $scope.panNode = audioCtx.createStereoPanner();
+                    $scope.volume = audioCtx.createGain();
+
+                    $scope.sourceNode.connect($scope.panNode);
+                    $scope.panNode.connect($scope.volume);
+                    $scope.volume.connect(gainNode);
+
+                    $scope.sourceNode.buffer = buffer;
+                    
+                    var speed = parseFloat($scope.soundspeed) || 1;
+                    $scope.sourceNode.playbackRate.value = speed;
+                    $scope.volume.gain.value = parseFloat($scope.soundvolume) || 0.5;
+                    if ($scope.panNode.pan) $scope.panNode.pan.value = parseFloat($scope.soundpan) || 0;
+
+                    // STRICT BOUNDARIES
+                    var offset = parseFloat($scope.seekpos);
+                    if (offset < $scope.newloopstart || offset >= $scope.newloopend) {
+                        offset = $scope.newloopstart;
+                        $scope.seekpos = offset;
+                    }
+
+                    var durationToPlay = $scope.newloopend - offset;
+
+                    // Sync hardware clock
+                    $scope.startedAt = audioCtx.currentTime - (offset / speed);
+                    
+                    // start(when, offset, duration)
+                    $scope.sourceNode.start(0, offset, Math.max(0, durationToPlay));
+                    $scope.playing = true;
+                    $scope.onplay();
+                };
+
+                $scope.pause = function() {
+                    if ($scope.playing) {
+                        $scope.seekpos = $scope.getCurrentTime();
+                        $scope.playing = false;
+                        $scope.stopNodes();
+                        $scope.onpause();
+                    }
+                };
+
+                $scope.stop = function() {
+                    $scope.playing = false;
+                    $scope.stopNodes();
+                    $scope.seekpos = $scope.newloopstart; // Reset to loopstart handle
+                };
+
+                $scope.stopNodes = function() {
+                    if ($scope.sourceNode) {
+                        try { $scope.sourceNode.stop(0); } catch (e) {}
+                        $scope.sourceNode.disconnect();
+                        $scope.sourceNode = null;
+                    }
+                };
+
+                $scope.getCurrentTime = function() {
+                    if ($scope.playing && $scope.startedAt) {
+                        return (audioCtx.currentTime - $scope.startedAt) * (parseFloat($scope.soundspeed) || 1);
+                    }
+                    return $scope.seekpos;
+                };
+            };
+
+            // --- 4. LOADING ---
             var req = {
                 method: 'GET',
                 url: '/freesound/sounds/' + audiodata.id + '/?fields=id,name,previews,images,duration,license,username,url,similar_sounds',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+                headers: { 'Content-Type': 'application/json' }
             };
 
             $.ajax(req).then(function(response) {
-
                 $scope.$apply(function() {
                     $scope.freesound = response;
                     $scope.soundsrc = $scope.freesound.previews['preview-hq-mp3'];
+                    $scope.newloopend = $scope.freesound.duration;
                 });
 
-                var itemsrc = $scope.freesound.previews['preview-hq-mp3'];
-                var divid = 'audio' + audiodata.playerid;
-
-                // INITIAL SETTINGS
-                $scope.seekpos = 0;
-                $scope.loop = false;
-                $scope.newloopstart = 0;
-                $scope.newloopend = $scope.freesound.duration;
-                $scope.silence = 0;
-                $scope.soundvolume = 0.5;
-                $scope.soundpan = 0;
-                $scope.soundspeed = 1;
-
-                // Load the buffer
                 var request = new XMLHttpRequest();
-                request.open('GET', itemsrc, true);
+                request.open('GET', $scope.soundsrc, true);
                 request.responseType = 'arraybuffer';
                 request.onload = function() {
                     audioCtx.decodeAudioData(request.response, function(buffer) {
-                        // Initialize the Sound object
                         new $scope.Sound(buffer);
-                        
-                        // Check for autoplay
-                        if (audiodata.newsound === 1) {
-                            $scope.$apply(function() { $scope.play(); });
-                        }
+                        if (audiodata.newsound === 1) $scope.$apply(function() { $scope.play(); });
                     });
                 };
                 request.send();
-
-                $scope.Sound = function(buffer) {
-                    $scope.sourceNode = null;
-
-                    $scope.play = function() {
-                        // Modern Browsers require resume() on a user gesture
-                        if (audioCtx.state === 'suspended') {
-                            audioCtx.resume();
-                        }
-
-                        // Clear any waiting silence
-                        if ($scope.silenceTimer) $timeout.cancel($scope.silenceTimer);
-
-                        $scope.sourceNode = audioCtx.createBufferSource();
-                        $scope.panNode = audioCtx.createStereoPanner();
-                        $scope.volume = audioCtx.createGain();
-
-                        $scope.sourceNode.connect($scope.panNode);
-                        $scope.panNode.connect($scope.volume);
-                        $scope.volume.connect(gainNode);
-
-                        $scope.sourceNode.buffer = buffer;
-                        
-                        // Apply current settings
-                        $scope.sourceNode.playbackRate.value = $scope.soundspeed;
-                        $scope.volume.gain.value = $scope.soundvolume;
-                        $scope.panNode.pan.value = $scope.soundpan;
-
-                        // Calculate timing
-                        $scope.offset = $scope.seekpos;
-                        if ($scope.offset >= $scope.newloopend) $scope.offset = $scope.newloopstart;
-                        
-                        var durationToPlay = $scope.newloopend - $scope.offset;
-                        
-                        $scope.startedAt = audioCtx.currentTime - ($scope.offset / $scope.soundspeed);
-
-                        $scope.sourceNode.start(0, $scope.offset, Math.max(0, durationToPlay));
-                        $scope.playing = true;
-                        $scope.onplay();
-
-                        $scope.sourceNode.onended = function() {
-                            if (!$scope.loop) {
-                                $scope.$apply(function() { $scope.stop(); });
-                            } else {
-                                // LOOP LOGIC WITH SILENCE
-                                var loopPartDuration = $scope.newloopend - $scope.newloopstart;
-                                var silenceSeconds = ($scope.silence / 100) * loopPartDuration;
-
-                                $scope.$apply(function() {
-                                    $scope.playing = false; 
-                                    $scope.seekpos = $scope.newloopstart;
-                                });
-
-                                // Schedule next play
-                                $scope.silenceTimer = $timeout(function() {
-                                    $scope.play();
-                                }, silenceSeconds * 1000);
-                            }
-                        };
-                    };
-
-                    $scope.pause = function() {
-                        if ($scope.playing) {
-                            $scope.seekpos = audioCtx.currentTime - $scope.startedAt;
-                            $scope.stopNodes();
-                            $scope.playing = false;
-                            $scope.onpause();
-                        }
-                    };
-
-                    $scope.stop = function() {
-                        if ($scope.silenceTimer) $timeout.cancel($scope.silenceTimer);
-                        $scope.stopNodes();
-                        $scope.seekpos = $scope.newloopstart;
-                        $scope.playing = false;
-                    };
-
-                    $scope.stopNodes = function() {
-                        if ($scope.sourceNode) {
-                            $scope.sourceNode.stop();
-                            $scope.sourceNode.disconnect();
-                            $scope.sourceNode = null;
-                        }
-                    };
-
-                    // SLIDERS / CONTROLS
-                    $scope.setvolume = function(val) {
-                        $scope.soundvolume = val;
-                        if ($scope.volume) $scope.volume.gain.value = val;
-                    };
-
-                    $scope.setspeed = function(val) {
-                        $scope.soundspeed = val;
-                        if ($scope.sourceNode) $scope.sourceNode.playbackRate.value = val;
-                    };
-
-                    $scope.setpan = function(val) {
-                        $scope.soundpan = val;
-                        if ($scope.panNode) $scope.panNode.pan.value = val;
-                    };
-
-                    $scope.playpause = function() {
-                        if ($scope.playing) $scope.pause();
-                        else $scope.play();
-                    };
-
-                    // CURSOR UPDATER
-                    var cursorInterval = setInterval(function() {
-                        if ($scope.playing && $scope.sourceNode) {
-                            $scope.$apply(function() {
-                                // Calculate current position based on speed
-                                $scope.seekpos = (audioCtx.currentTime - $scope.startedAt) * $scope.soundspeed;
-                            });
-                        }
-                    }, 50);
-
-                    $scope.$on('$destroy', function() {
-                        clearInterval(cursorInterval);
-                        if ($scope.silenceTimer) $timeout.cancel($scope.silenceTimer);
-                    });
-                };
-
-                $scope.onplay = function() { $scope.$parent.logger2('played: ' + $scope.freesound.name); };
-                $scope.onpause = function() { $scope.$parent.logger2('paused: ' + $scope.freesound.name); };
-                $scope.removethis = function() {
-                    $scope.loop = false;
-                    $scope.stop();
-                    $scope.$parent.removeitem(audiodata.playerid);
-                };
-
             });
+
+            // --- 5. 10ms OBSERVER LOOP ---
+            $scope.cursorInterval = window.setInterval(function() {
+                if (!$scope.freesound) return;
+
+                $scope.$apply(function() {
+                    if ($scope.playing) {
+                        var now = $scope.getCurrentTime();
+                        
+                        // boundary reached
+                        if (now >= $scope.newloopend) {
+                            if ($scope.loop && $scope.newloopstart < $scope.newloopend) {
+                                $scope.seekpos = $scope.newloopstart;
+                                $scope.play(); // Auto loop restart
+                            } else {
+                                $scope.stop();
+                            }
+                        } else {
+                            $scope.seekpos = now;
+                        }
+                    } 
+                    
+                    // Requirement: Handle reset if crossing
+                    if ($scope.newloopstart >= $scope.newloopend && $scope.newloopend > 0) {
+                        $scope.newloopstart = 0;
+                        $('#' + $scope.loopstart).css('left', 0);
+                    }
+                });
+            }, 10);
+
+            // --- 6. DRAG HANDLERS (With Safety Fix for clientWidth) ---
+            $scope.setloopstart = function() {
+                var el = document.getElementById($scope.loopstart);
+                // Use the class to find the container reliably
+                var cont = element[0].querySelector('.dragcontainer');
+                if (el && cont) {
+                    var boxwidth = cont.clientWidth;
+                    $scope.newloopstart = (el.offsetLeft * $scope.freesound.duration) / boxwidth;                   
+                    console.log("sample start: " + $scope.newloopstart);
+
+                    // Requirement: If not playing, move cursor to loopstart
+                    if (!$scope.playing) $scope.seekpos = $scope.newloopstart;
+                }
+            };
+
+            $scope.setloopend = function() {
+                var el = document.getElementById($scope.loopend);
+                var cont = element[0].querySelector('.dragcontainer');
+                if (el && cont) {
+                    var boxwidth = cont.clientWidth;
+                    var newEnd = (el.offsetLeft * $scope.freesound.duration) / boxwidth;
+                    $scope.newloopend = newEnd;
+                    console.log("sample end: " + $scope.newloopend);
+
+                    // Requirement: If playing and end moved after current time, restart to update hardware stop point
+                    if ($scope.playing && newEnd > $scope.seekpos) {
+                        $scope.play(); 
+                    }
+                }
+            };
+
+            // --- 7. UI HELPERS ---
+            $scope.setseek = function(val) {
+                $scope.seekpos = parseFloat(val);
+                // Requirement: If changing during play, restart play from that point
+                if ($scope.playing) $scope.play();
+            };
+
+            $scope.playpause = function() { $scope.playing ? $scope.pause() : $scope.play(); };
+            $scope.setvolume = function(v) { $scope.soundvolume = v; if($scope.volume) $scope.volume.gain.value = v; };
+            $scope.setpan = function(v) { $scope.soundpan = v; if($scope.panNode) $scope.panNode.pan.value = v; };
+            $scope.setspeed = function(v) { 
+                $scope.soundspeed = v; 
+                if($scope.playing) $scope.play(); 
+            };
+            $scope.removethis = function() { 
+                $scope.loop = false; $scope.stop(); 
+                $scope.$parent.removeitem(audiodata.playerid); 
+            };
+
+            $scope.$on('$destroy', function() { window.clearInterval($scope.cursorInterval); });
         }
     };
 }]);

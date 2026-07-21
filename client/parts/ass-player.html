@@ -39,23 +39,6 @@
 
 <div class="sliders">
 
-<p class="smalltext silencectr">
-    <input
-        type="range"
-        min="0"
-        max="200"
-        value="0"
-        step="1"
-        id="silence-{{audiodata.playerid}}"
-        ng-model="silence"
-        ng-change="setsilence(silence)">
-    </input>
-
-    <span class="infotxt">
-        silence: {{silence | number: 0}}%
-    </span>
-</p>
-
 
 <p class="smalltext panner">
 	<input type="range" min="-1" value="{{soundpan}}" max="1" step="any" id="pan-{{audiodata.playerid}}" ng-model="soundpan" ng-change="setpan(soundpan)"></input> <span class="infotxt">pan: {{soundpan | number: 2}} </span> </p>
@@ -75,13 +58,9 @@
 <span class="smalltext volctr">
 	<input type="range" min="0" value="{{sound.volume}}" max="1" step="any" id="vol-{{audiodata.playerid}}" ng-model="soundvolume" ng-change="setvolume(soundvolume)"></input> <span class="infotxt">vol: {{soundvolume | number: 2}} </span> </span>
 
-<!-- <a class="loopbtn fa fa-rotate-right" ng-class="{'disabled': loop.booleanValue}" ng-click="loop.booleanValue = !loop.booleanValue"></a>&nbsp;&nbsp;&nbsp;&nbsp; -->
-
 <a class="fa fa-download download" href="{{freesound.url}}" target="_new" alt="open on freesound"></a>
-<!--<a class="fa fa-search search searchsimilar" href="{{freesound.url}}" target="_new" alt="open on freesound" ng-click="searchsimilar()"></a>-->
-<!--<a class="fa fa-search search searchsimilar" ng-controller="queryController" ng-click="searchsimilar(freesound.id);$event.preventDefault()"></a>-->
-
 <a class="fa fa-search search searchsimilar" ng-click="searchsimi(freesound.id);"></a>
+<a id="addsilence" ng-model="setsilence" class="fa fa-plus addsilence" ng-click="addsilence();"></a>
 
 	<div class="audioplayer" id="audio{{audiodata.playerid}}"></div>
 
