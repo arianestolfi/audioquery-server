@@ -1430,12 +1430,13 @@ width: 100%;
     fill: white; /* Makes the icon visible on the red background */
 }
 
-#dragItems {
+#dragItems, #stopAll {
   background-color: #000;
   color: #fff;
-  width: 70px;
+  min-width: 70px;
   text-align: center;
   font-size: small;
   position: relative;
   top: 0.5px;
+  cursor: pointer;
 }

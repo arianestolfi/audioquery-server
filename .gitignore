@@ -59,6 +59,8 @@ typings/
 
 
 start.sh
+start.bat
+start.ps1
 
 .DS_Store
 

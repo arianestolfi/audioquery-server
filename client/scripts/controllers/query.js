@@ -420,6 +420,17 @@ $scope.toggleDrag = function() {
     }
 };
 
+$scope.stopAll = function() {
+    $rootScope.$broadcast('stopAllSounds');
+    var audios = document.getElementsByTagName("audio");
+    for (var i = 0; i < audios.length; i++) {
+        try {
+            audios[i].pause();
+            audios[i].currentTime = 0;
+        } catch(e) {}
+    }
+};
+
 $scope.syncSortableOrder = function() {
     var newSoundOrder = [];
     

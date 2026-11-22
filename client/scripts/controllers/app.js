@@ -249,6 +249,7 @@ app.directive('assPlayer', ['$rootScope', '$timeout', function($rootScope, $time
             };
 
             $scope.stop = function() {
+                audiodata.newsound = 0;
                 $scope.playing = false;
                 $scope.stopNodes();
                 $scope.seekpos = $scope.newloopstart;
@@ -382,6 +383,11 @@ app.directive('assPlayer', ['$rootScope', '$timeout', function($rootScope, $time
             $scope.setpan = function(v) { $scope.soundpan = v; if($scope.panNode) $scope.panNode.pan.value = v; };
             $scope.setspeed = function(v) { $scope.soundspeed = v; if($scope.playing) $scope.play(); };
             $scope.removethis = function() { $scope.loop = false; $scope.stop(); $scope.$parent.removeitem(audiodata.playerid); };
+
+            $scope.$on('stopAllSounds', function() {
+                $scope.stop();
+                $scope.$applyAsync();
+            });
 
             $scope.$on('$destroy', function() { window.clearInterval($scope.cursorInterval); });
         }
